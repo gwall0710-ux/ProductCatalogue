@@ -1,0 +1,97 @@
+@baseUrl       = http://localhost:5000
+@correlationId = test-client-001
+
+### ── List all products (local data only) ─────────────────────────────────
+GET {{baseUrl}}/api/products
+X-Correlation-ID: {{correlationId}}
+
+### ── Get product 1 — enriched with live inventory data ──────────────────
+GET {{baseUrl}}/api/products/1
+X-Correlation-ID: {{correlationId}}
+
+### ── Get product 2 ───────────────────────────────────────────────────────
+GET {{baseUrl}}/api/products/2
+X-Correlation-ID: {{correlationId}}
+
+### ── Get product 3 ───────────────────────────────────────────────────────
+GET {{baseUrl}}/api/products/3
+X-Correlation-ID: {{correlationId}}
+
+### ── Get product that does not exist (expect 404 ProblemDetails) ─────────
+GET {{baseUrl}}/api/products/9999
+X-Correlation-ID: {{correlationId}}
+
+### ── Create a valid product ─────────────────────────────────────────────
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+X-Correlation-ID: {{correlationId}}
+
+{
+  "name": "Smart Watch Pro",
+  "description": "GPS fitness tracker with heart rate monitor, sleep tracking, and 7-day battery life."
+}
+
+### ── Create with empty name (expect 422 with validation errors) ──────────
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "This should fail validation."
+}
+
+### ── Create with both fields empty (expect 422 with two errors) ──────────
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": ""
+}
+
+### ── Update product 1 ───────────────────────────────────────────────────
+PUT {{baseUrl}}/api/products/1
+Content-Type: application/json
+X-Correlation-ID: {{correlationId}}
+
+{
+  "name": "Wireless Headphones Pro",
+  "description": "Updated model with improved ANC and 40-hour battery life."
+}
+
+### ── Update product that does not exist (expect 404) ───────────────────
+PUT {{baseUrl}}/api/products/9999
+Content-Type: application/json
+X-Correlation-ID: {{correlationId}}
+
+{
+  "name": "Ghost Product",
+  "description": "This product does not exist."
+}
+
+### ── Update with invalid data (expect 422) ─────────────────────────────
+PUT {{baseUrl}}/api/products/1
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": ""
+}
+
+### ── Delete product 3 ───────────────────────────────────────────────────
+DELETE {{baseUrl}}/api/products/3
+X-Correlation-ID: {{correlationId}}
+
+### ── Delete a product that does not exist (expect 404) ─────────────────
+DELETE {{baseUrl}}/api/products/9999
+X-Correlation-ID: {{correlationId}}
+
+### ── Mock inventory endpoint directly ───────────────────────────────────
+GET {{baseUrl}}/mock/inventory/1
+X-Correlation-ID: {{correlationId}}
+
+### ── Mock inventory health check ────────────────────────────────────────
+GET {{baseUrl}}/mock/inventory/health
+
+### ── API health check ───────────────────────────────────────────────────
+GET {{baseUrl}}/health
